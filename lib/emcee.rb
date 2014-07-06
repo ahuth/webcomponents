@@ -1,3 +1,5 @@
+require 'hpricot'
+
 require "emcee/version"
 
 require "emcee/helpers/asset_url_helper"

@@ -1,4 +1,3 @@
-require 'nokogiri'
 require 'uri'
 
 module Emcee
@@ -12,19 +11,19 @@ module Emcee
       end
 
       def process(data)
-        doc = Nokogiri::HTML.fragment(data)
+        doc = Hpricot(data)
         inline_styles(doc)
-        URI.unescape(doc.to_s)
+        doc.to_html.lstrip
       end
 
       private
 
       def inline_styles(doc)
-        doc.css("link[rel='stylesheet']").each do |node|
-          path = absolute_path(node.attribute("href"))
+        doc.search("//link[@rel='stylesheet']").each do |node|
+          path = absolute_path(node.attributes["href"])
           content = @context.evaluate(path)
-          style = create_style(doc, content)
-          node.replace(style)
+          style = create_style(content)
+          node.swap(style)
         end
       end
 
@@ -32,10 +31,10 @@ module Emcee
         File.absolute_path(path, @directory)
       end
 
-      def create_style(doc, content)
-        node = Nokogiri::XML::Node.new("style", doc)
-        node.content = content
-        node
+      def create_style(content)
+        node = Hpricot::Elem.new("style")
+        node.inner_html = content
+        node.to_html
       end
     end
   end

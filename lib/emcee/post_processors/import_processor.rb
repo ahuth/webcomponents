@@ -1,4 +1,3 @@
-require 'nokogiri'
 require 'uri'
 
 module Emcee
@@ -12,24 +11,24 @@ module Emcee
       end
 
       def process(data)
-        doc = Nokogiri::HTML.fragment(data)
+        doc = Hpricot(data)
         require_assets(doc)
         remove_imports(doc)
-        URI.unescape(doc.to_s.lstrip)
+        doc.to_html.lstrip
       end
 
       private
 
       def require_assets(doc)
-        doc.css("link[rel='import']").each do |node|
-          path = File.absolute_path(node.attribute("href"), @directory)
+        doc.search("//link[@rel='import']").each do |node|
+          path = File.absolute_path(node.attributes["href"], @directory)
           @context.require_asset(path)
         end
       end
 
       def remove_imports(doc)
-        doc.css("link[rel='import']").each do |node|
-          node.remove
+        doc.search("//link[@rel='import']").each do |node|
+          node.swap('')
         end
       end
     end
