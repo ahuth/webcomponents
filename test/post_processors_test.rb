@@ -46,7 +46,7 @@ class PostProcessorsTest < ActiveSupport::TestCase
     assert_equal 1, @context.assets.length
     assert_equal "/test.html", @context.assets[0]
     assert_equal processed, <<-EOS.strip_heredoc
-      <link rel="stylesheet" href="test.css">
+      <link rel="stylesheet" href="test.css" />
       <script src="test.js"></script>
       <p>test</p>
     EOS
@@ -57,7 +57,7 @@ class PostProcessorsTest < ActiveSupport::TestCase
     processed = processor.process(@body)
 
     assert_equal processed, <<-EOS.strip_heredoc
-      <link rel="import" href="test.html">
+      <link rel="import" href="test.html" />
       <style>/* contents */</style>
       <script src="test.js"></script>
       <p>test</p>
@@ -69,8 +69,8 @@ class PostProcessorsTest < ActiveSupport::TestCase
     processed = processor.process(@body)
 
     assert_equal processed, <<-EOS.strip_heredoc
-      <link rel="import" href="test.html">
-      <link rel="stylesheet" href="test.css">
+      <link rel="import" href="test.html" />
+      <link rel="stylesheet" href="test.css" />
       <script>/* contents */</script>
       <p>test</p>
     EOS

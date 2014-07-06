@@ -1,4 +1,3 @@
-require 'nokogiri'
 require 'uri'
 
 module Emcee
@@ -12,19 +11,19 @@ module Emcee
       end
 
       def process(data)
-        doc = Nokogiri::HTML.fragment(data)
+        doc = Hpricot(data)
         inline_scripts(doc)
-        URI.unescape(doc.to_s)
+        doc.to_html.lstrip
       end
 
       private
 
       def inline_scripts(doc)
-        doc.css("script[src]").each do |node|
-          path = absolute_path(node.attribute("src"))
+        doc.search("//script[@src]").each do |node|
+          path = absolute_path(node.attributes["src"])
           content = @context.evaluate(path)
-          script = create_script(doc, content)
-          node.replace(script)
+          script = create_script(content)
+          node.swap(script)
         end
       end
 
@@ -32,10 +31,10 @@ module Emcee
         File.absolute_path(path, @directory)
       end
 
-      def create_script(doc, content)
-        node = Nokogiri::XML::Node.new("script", doc)
-        node.content = content
-        node
+      def create_script(content)
+        node = Hpricot::Elem.new("script")
+        node.inner_html = content
+        node.to_html
       end
     end
   end

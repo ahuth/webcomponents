@@ -35,7 +35,7 @@ class DummyAppIntegrationTest < ActionController::TestCase
       <p>test1</p>
       <polymer-element name="test6" attributes="source">
         <template>
-          <img src="{{ source }}">
+          <img src="{{ source }}" />
         </template>
       </polymer-element>
     EOS
